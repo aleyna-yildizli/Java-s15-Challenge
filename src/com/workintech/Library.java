@@ -4,6 +4,7 @@ import com.workintech.Interfaces.BookManageable;
 import com.workintech.Interfaces.Listable;
 import com.workintech.Interfaces.Searchable;
 import com.workintech.enums.BookCategory;
+import com.workintech.enums.BookStatus;
 import com.workintech.people.Author;
 import com.workintech.people.Reader;
 
@@ -39,9 +40,9 @@ public class Library implements BookManageable, Listable, Searchable {
         this.books = books;
     }
 
+
+
     // BookManageable interface metodları
-
-
     @Override
     public void addBook(Book book) {
         books.put(book.getBookId(), book);
@@ -50,6 +51,15 @@ public class Library implements BookManageable, Listable, Searchable {
     @Override
     public void deleteBook(Long id) {
         books.remove((Long) id);
+    }
+
+    @Override
+    public void updateBook( Long bookId, int stock, BookStatus status) {
+        Book book = getBooks().get(bookId);
+        if (book != null) {
+            book.setStatus(status);
+            book.setStock(stock);
+        }
     }
 
     // Listable interface metodları

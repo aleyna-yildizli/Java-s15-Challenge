@@ -12,29 +12,25 @@ import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        // Kütüphane ve kütüphaneci oluşturma
         Library library = new Library();
         Librarian librarian = new Librarian("JohnDoe", library, "password123");
 
-        // Scanner'ı başlat
         Scanner scanner = new Scanner(System.in);
 
-        // Menüyü sürekli tekrar etmek için sonsuz döngü
+
         while (true) {
-            // Kullanıcıya menü seçeneklerini sunma
             System.out.println("\nYapmak istediğiniz işlemi seçin:");
             System.out.println("0 - Çıkış");
             System.out.println("1 - Kitap ekleme");
             System.out.println("2 - Kitap silme");
-            System.out.println("3 - Tüm kitapları listeleme");
-            System.out.println("4 - Arama işlemleri");
+            System.out.println("3 - Kitap Güncelleme işlemleri");
+            System.out.println("4 - Tüm kitapları listeleme");
+            System.out.println("5 - Arama işlemleri");
 
-            // Kullanıcıdan seçim yapmasını isteyin
             System.out.print("Seçiminizi girin: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // scanner'ı temizlemek için
+            scanner.nextLine();
 
-            // Kullanıcının seçimlerine göre işlemleri gerçekleştirme
             switch (choice) {
                 case 0:
                     System.out.println("Çıkış yapılıyor...");
@@ -90,6 +86,61 @@ public class Main {
                     break;
 
                 case 3:
+                    System.out.println("Kitap bilgilerini güncelleme işlemi için bilgileri girin:");
+
+                    System.out.print("Güncellenecek kitabın ID'sini girin: ");
+                    long updateBookId = scanner.nextLong();
+                    scanner.nextLine();
+
+                    Book bookToUpdate = null;
+                    for (Book book : librarian.getLibrary().listAllBooks()) {
+                        if (book.getBookId() == updateBookId) {
+                            bookToUpdate = book;
+                            break;
+                        }
+                    }
+
+                    if (bookToUpdate == null) {
+                        System.out.println("Belirtilen ID'ye sahip bir kitap bulunamadı.");
+                        return;
+                    }
+
+                    System.out.println( bookToUpdate.getBookId() + " ID'li " + bookToUpdate.getBookName()  + " Kitabının Stok Sayısı: " + bookToUpdate.getStock() +"," + " Mevcut Durumu: " + bookToUpdate.getStatus());
+                    System.out.println("Hangi bilgileri güncellemek istiyorsunuz?");
+
+                    System.out.println("1. Yeni stok sayısı");
+                    System.out.println("2. Yeni durumu");
+                    System.out.print("Seçiminizi yapın (1 veya 2): ");
+                    int updateChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    switch (updateChoice) {
+                        case 1:
+                            System.out.print("Yeni stok sayısını girin: ");
+                            int newStock = scanner.nextInt();
+                            scanner.nextLine();
+                            bookToUpdate.setStock(newStock);
+                            System.out.println("Kitap bilgileri güncellendi.");
+                            break;
+                        case 2:
+                            System.out.println("Mevcut Durumlar:");
+                            for (BookStatus bookStatus : BookStatus.values()) {
+                                System.out.println("- " + bookStatus);
+                            }
+                            System.out.print("Yeni durumu seçin: ");
+                            BookStatus newStatus = BookStatus.valueOf(scanner.nextLine().toUpperCase());
+                            bookToUpdate.setStatus(newStatus);
+                            System.out.println("Kitap bilgileri güncellendi.");
+                            break;
+                        default:
+                            System.out.println("Geçersiz seçim.");
+                            break;
+                    }
+                    break;
+
+
+
+                case 4:
                     // Tüm kitapları listeleme
                     System.out.println("\nTüm kitaplar:");
                     List<Book> allBooks = librarian.getLibrary().listAllBooks();
@@ -98,7 +149,7 @@ public class Main {
                     }
                     break;
 
-                case 4:
+                case 5:
                     // Arama işlemleri
                     System.out.println("\nArama işlemleri:");
                     System.out.println("1 - Kitap ID'ye göre arama");
