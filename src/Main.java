@@ -1,10 +1,14 @@
 import com.workintech.Book;
 import com.workintech.Library;
 import com.workintech.enums.BookCategory;
+import com.workintech.enums.BookStatus;
+import com.workintech.people.Author;
 import com.workintech.people.Librarian;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,17 +47,27 @@ public class Main {
 
                     System.out.print("Kitap ID'sini girin: ");
                     long bookId = scanner.nextLong();
-                    scanner.nextLine(); // scanner'ı temizlemek için
+                    scanner.nextLine();
 
                     System.out.print("Kitap adını girin: ");
                     String bookName = scanner.nextLine();
 
                     System.out.print("Yazar adını girin: ");
                     String authorName = scanner.nextLine();
+                    // `Author` nesnesini oluşturma
+                    Set<Book> booksByAuthor = new HashSet<>();
+                    Author author = new Author(authorName, booksByAuthor);
 
                     System.out.print("Stok sayısını girin: ");
                     int stock = scanner.nextInt();
-                    scanner.nextLine(); // scanner'ı temizlemek için
+                    scanner.nextLine();
+
+                    System.out.println("Mevcut Durumlar:");
+                    for (BookStatus bookStatus : BookStatus.values()) {
+                        System.out.println("- " + bookStatus);
+                    }
+                    System.out.print("Durum seçiminizi girin: ");
+                    BookStatus status = BookStatus.valueOf(scanner.nextLine().toUpperCase());
 
                     System.out.println("Mevcut Kategoriler:");
                     for (BookCategory category : BookCategory.values()) {
@@ -62,7 +76,7 @@ public class Main {
                     System.out.print("Kategori seçiminizi girin: ");
                     BookCategory category = BookCategory.valueOf(scanner.nextLine().toUpperCase());
 
-                    Book newBook = new Book(bookId, bookName, authorName, stock, category);
+                    Book newBook = new Book(bookId, bookName, author, stock, status, category);
                     librarian.getLibrary().addBook(newBook);
                     System.out.println("Kitap başarıyla eklendi.");
                     break;
@@ -80,7 +94,7 @@ public class Main {
                     System.out.println("\nTüm kitaplar:");
                     List<Book> allBooks = librarian.getLibrary().listAllBooks();
                     for (Book book : allBooks) {
-                        System.out.println(book.getBookName() + " - " + book.getAuthorName());
+                        System.out.println(book.getBookId() + " numaralı kitap -> " + book.getBookName() + " - " + book.getAuthor());
                     }
                     break;
 
@@ -123,7 +137,9 @@ public class Main {
                             // Kitap yazarına göre arama
                             System.out.print("Aramak istediğiniz kitabın yazarını girin: ");
                             String searchAuthorName = scanner.nextLine();
-                            boolean foundByAuthor = library.searchBooksByAuthor(searchAuthorName);
+                            Set<Book> emptyBooksSet = new HashSet<>();
+                            Author searchAuthor = new Author(searchAuthorName, emptyBooksSet);
+                            boolean foundByAuthor = library.searchBooksByAuthor(searchAuthor);
                             if (foundByAuthor) {
                                 System.out.println("Kitap bulundu.");
                             } else {
