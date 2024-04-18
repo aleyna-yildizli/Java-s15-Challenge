@@ -6,10 +6,17 @@ import java.util.Objects;
 
 public abstract class Person {
     private String userName;
+    private String password;
     private PersonRoles personRoles;
 
     public Person(String userName, PersonRoles personRoles) {
         this.userName = userName;
+        this.personRoles = personRoles;
+    }
+
+    public Person(String userName, String password, PersonRoles personRoles) {
+        this.userName = userName;
+        this.password = password;
         this.personRoles = personRoles;
     }
 
@@ -19,6 +26,14 @@ public abstract class Person {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public PersonRoles getPersonRoles() {
@@ -31,6 +46,13 @@ public abstract class Person {
 
     public PersonRoles whoYouAre() {
         return getPersonRoles();
+    }
+
+    public boolean login(String username, String password) {
+        if (this.userName.equals(username) && this.password.equals(password)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

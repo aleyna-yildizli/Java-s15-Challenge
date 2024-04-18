@@ -15,8 +15,8 @@ import java.util.TreeMap;
 
 public class Library implements BookManageable, Listable, Searchable {
 
-    private Map<Long, Reader> readers;
-    private Map<Long, Book> books;
+    public Map<Long, Reader> readers;
+    public Map<Integer, Book> books;
 
     public Library() {
         this.readers = new TreeMap<>();
@@ -32,11 +32,11 @@ public class Library implements BookManageable, Listable, Searchable {
         this.readers = readers;
     }
 
-    public Map<Long, Book> getBooks() {
+    public Map<Integer, Book> getBooks() {
         return books;
     }
 
-    public void setBooks(Map<Long, Book> books) {
+    public void setBooks(Map<Integer, Book> books) {
         this.books = books;
     }
 
@@ -49,12 +49,13 @@ public class Library implements BookManageable, Listable, Searchable {
     }
 
     @Override
-    public void deleteBook(Long id) {
-        books.remove((Long) id);
+    public void deleteBook(int id) {
+        books.remove((int) id);
     }
 
+
     @Override
-    public void updateBook( Long bookId, int stock, BookStatus status) {
+    public void updateBook( int bookId, int stock, BookStatus status) {
         Book book = getBooks().get(bookId);
         if (book != null) {
             book.setStatus(status);
@@ -91,13 +92,13 @@ public class Library implements BookManageable, Listable, Searchable {
     }
 
     @Override
-    public boolean searchBookById(long bookId) {
+    public boolean searchBookById(int bookId) {
         if (books.containsKey(bookId)) {
             Book book = books.get(bookId);
-            System.out.println("Aradığınız ID'ye göre kitabın adı: " + book.getBookId() + " = " + book.getBookName() );
+            System.out.println("Aradığınız ID'ye göre bulunan Kitabın Adı " + book.getBookName() + "," + " Yazarı " + book.getAuthor().getUserName() + "," + " Stok sayısı " + book.getStock() + "," + " Durumu " + book.getStatus() + "," + " Kategorisi " + book.getCategory() +".");
             return true;
         } else {
-            System.out.println("Aradığınız kitap id'si mevcut değil");
+            System.out.println("Aradığınız kitap ID'si bulunamadı.");
             return false;
         }
     }
@@ -106,7 +107,7 @@ public class Library implements BookManageable, Listable, Searchable {
     public boolean searchBooksByName(String bookName) {
         for (Book book : books.values()) {
             if (book.getBookName().equalsIgnoreCase(bookName)) {
-                System.out.println("Aradığınız kitap adı: " + book.getBookName());
+                System.out.println("Aradığınız Kitabın Adı " + book.getBookName() + "," + " Yazarı " + book.getAuthor().getUserName() + "," + " Stok sayısı " + book.getStock() + "," + " Durumu " + book.getStatus() + "," + " Kategorisi " + book.getCategory() +".");
                 return true;
             }
         }
@@ -116,22 +117,24 @@ public class Library implements BookManageable, Listable, Searchable {
 
     @Override
     public boolean searchBooksByAuthor(Author author) {
-        boolean authorFound = false;
+        boolean foundBooks = false;
         System.out.println("Yazar: " + author.getUserName() + " için bulunan kitaplar:");
 
         for (Book book : books.values()) {
-            // `book` nesnesinin `getAuthor()` metodunu kullanarak `Author` nesnesini karşılaştırma
             if (book.getAuthor().equals(author)) {
                 System.out.println("- " + book.getBookName());
-                authorFound = true;
+                foundBooks = true;
             }
         }
-
-        if (!authorFound) {
-            System.out.println("Aradığınız yazar mevcut değil.");
+        if (!foundBooks) {
+            System.out.println("Aradığınız yazarın kitapları bulunamadı.");
             return false;
         }
-
         return true;
+    }
+
+    // getBookById metodu
+    public Book getBookById(int bookId) {
+        return books.get(bookId);
     }
 }

@@ -5,27 +5,27 @@ import com.workintech.enums.BookStatus;
 import com.workintech.people.Author;
 
 public class Book{
-    private Long bookId; //Kitabın id'si
+    private int bookId; //Kitabın id'si
     private String bookName; //Kitabın adı
     private Author author; //Kitabın yazarı
     private int stock; //Kitabın stok durumu
     private BookStatus status; //Kitabın durumu
     private BookCategory category; //Kitabın kategorisi
 
-    public Book(Long bookId, String bookName, Author author, int stock, BookStatus status, BookCategory category) {
+    public Book(int bookId, String bookName, Author author, int stock, BookStatus status, BookCategory category) {
         this.bookId = bookId;
         this.bookName = bookName;
         this.author = author;
         this.stock = stock;
-        this.status = BookStatus.AVAILABLE;
+        this.status = status;
         this.category = category;
     }
 
-    public Long getBookId() {
+    public int getBookId() {
         return bookId;
     }
 
-    public void setBookId(Long bookId) {
+    public void setBookId(int bookId) {
         this.bookId = bookId;
     }
 

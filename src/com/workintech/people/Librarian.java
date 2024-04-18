@@ -5,14 +5,13 @@ import com.workintech.enums.PersonRoles;
 
 public class Librarian extends Person {
     private Library library;
-    private String password;
 
-    public Librarian(String userName, Library library, String password) {
-        super(userName, PersonRoles.LIBRARIAN);
+
+
+    public Librarian(String userName, String password, Library library) {
+        super(userName, password, PersonRoles.LIBRARIAN);
         this.library = library;
-        this.password = password;
     }
-
 
     public Library getLibrary() {
         return library;
@@ -20,13 +19,5 @@ public class Librarian extends Person {
 
     public void setLibrary(Library library) {
         this.library = library;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

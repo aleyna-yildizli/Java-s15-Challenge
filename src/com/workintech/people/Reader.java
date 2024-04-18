@@ -3,6 +3,7 @@ package com.workintech.people;
 import com.workintech.Book;
 import com.workintech.Interfaces.UserActionable;
 import com.workintech.Library;
+import com.workintech.enums.BookStatus;
 import com.workintech.enums.PersonRoles;
 
 import java.util.ArrayList;
@@ -10,63 +11,76 @@ import java.util.List;
 import java.util.Map;
 
 public class Reader extends Person implements UserActionable {
-    private final Long id;
-    private String password;
     private Map<String, List<Book>> userBooks; // Kullanıcıların ödünç aldığı kitaplar
     private static final int BOOK_LIMIT = 5;
+    private Library library;
 
-    public Reader(String userName, Long id, String password, Map<String, List<Book>> userBooks) {
-        super(userName, PersonRoles.READER);
-        this.id = id;
-        this.password = password;
+
+    public Reader( String userName, String password, Map<String, List<Book>> userBooks, Library library) {
+        super(userName, password, PersonRoles.READER);
         this.userBooks = userBooks;
+        this.library = library;
     }
-
 
     @Override
     public void borrowBook(int bookId, String userName) {
-        // Kitabı ödünç alan kullanıcının listesine ekleme
-        List<Book> borrowedBooks = userBooks.getOrDefault(userName, new ArrayList<>());
-
-        // Kütüphaneden kitabı al
         Library library = new Library();
-        Book book = library.getBooks().get((long) bookId);
+        Book book = library.getBooks().get(bookId);
+        if (book == null) {
+            System.out.println("Aradığınız kitap ID'si mevcut değil.");
+            return;
+        }
+        if (checkUserLimit(userName)) {
+            System.out.println("Maksimum kitap limitine ulaştınız. Daha fazla kitap almak için en az 1 kitap iade ediniz.");
+            return;
+        }
 
-        if (book != null) {
-            borrowedBooks.add(book);
-            userBooks.put(userName, borrowedBooks);
+        if (book.getStatus() == BookStatus.AVAILABLE) {
+            book.setStatus(BookStatus.BORROWED);
+            userBooks.getOrDefault(userName, new ArrayList<>()).add(book);
+            System.out.println("Kitap başarıyla ödünç alındı.");
         } else {
-            System.out.println("Kitap bulunamadı.");
+            System.out.println("Kitap ödünç alınamaz. Kitap is " + book.getStatus());
         }
     }
     @Override
     public void returnBook(int bookId, String userName) {
-        // Kullanıcının ödünç aldığı kitapları al
         List<Book> borrowedBooks = userBooks.get(userName);
 
-        // Eğer kullanıcı ödünç aldığı kitapları bulduysa
         if (borrowedBooks != null) {
-            // Listeden belirtilen kitapId'ye sahip kitabı çıkar
-            boolean bookRemoved = borrowedBooks.removeIf(book -> book.getBookId().equals(bookId));
+            Book bookToReturn = borrowedBooks.stream()
+                    .filter(book -> book.getBookId() == bookId)
+                    .findFirst()
+                    .orElse(null);
 
-            // Eğer kitap çıkarıldıysa ve kullanıcının ödünç aldığı kitap listesi boş ise, kullanıcıyı haritadan kaldır
-            if (bookRemoved) {
-                if (borrowedBooks.isEmpty()) {
-                    userBooks.remove(userName);
-                } else {
-                    // Kullanıcının ödünç aldığı kitap listesi boş değilse, haritada güncelle
-                    userBooks.put(userName, borrowedBooks);
-                }
+            if (bookToReturn != null) {
+                borrowedBooks.remove(bookToReturn);
+                bookToReturn.setStatus(BookStatus.AVAILABLE);
+                System.out.println("Kitap iade edildi.");
             } else {
-                // Kitap id'si bulunamadıysa kullanıcıyı bilgilendirin
-                System.out.println("Kullanıcının ödünç aldığı kitaplar arasında belirtilen kitap bulunamadı.");
+                System.out.println("Ödünç aldığınız kitaplar arasında belirtilen kitap bulunamadı.");
             }
         } else {
-            // Kullanıcının ödünç aldığı kitap listesi bulunamadıysa kullanıcıyı bilgilendirin
             System.out.println("Kullanıcının ödünç aldığı kitaplar bulunamadı.");
         }
     }
 
+
+    public Map<String, List<Book>> getUserBooks() {
+        return userBooks;
+    }
+
+    public void setUserBooks(Map<String, List<Book>> userBooks) {
+        this.userBooks = userBooks;
+    }
+
+    public Library getLibrary() {
+        return library;
+    }
+
+    public void setLibrary(Library library) {
+        this.library = library;
+    }
 
     @Override
     public boolean checkUserLimit(String userName) {
@@ -80,10 +94,18 @@ public class Reader extends Person implements UserActionable {
     }
 
     @Override
+    public boolean login(String username, String password) {
+        return super.login(username, password);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
     public String toString() {
         return "Reader{" +
-                "id=" + id +
-                ", password='" + password + '\'' +
                 ", userBooks=" + userBooks +
                 '}';
     }
