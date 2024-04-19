@@ -24,7 +24,7 @@ public class Reader extends Person implements UserActionable {
 
     @Override
     public void borrowBook(int bookId, String userName) {
-        Library library = new Library();
+        Library library = this.library;
         Book book = library.getBooks().get(bookId);
         if (book == null) {
             System.out.println("Aradığınız kitap ID'si mevcut değil.");
@@ -35,9 +35,10 @@ public class Reader extends Person implements UserActionable {
             return;
         }
 
-        if (book.getStatus() == BookStatus.AVAILABLE) {
+        if (book.getStatus() == BookStatus.AVAILABLE) {    // -> Kitap ödünç alınabilir durumda ise
             book.setStatus(BookStatus.BORROWED);
-            userBooks.getOrDefault(userName, new ArrayList<>()).add(book);
+            List<Book> borrowedBooks = userBooks.computeIfAbsent(userName, k -> new ArrayList<>());
+            borrowedBooks.add(book);
             System.out.println("Kitap başarıyla ödünç alındı.");
         } else {
             System.out.println("Kitap ödünç alınamaz. Kitap is " + book.getStatus());
@@ -47,7 +48,7 @@ public class Reader extends Person implements UserActionable {
     public void returnBook(int bookId, String userName) {
         List<Book> borrowedBooks = userBooks.get(userName);
 
-        if (borrowedBooks != null) {
+        if (borrowedBooks != null) { //// Kitapları bul ->  listeden çıkar
             Book bookToReturn = borrowedBooks.stream()
                     .filter(book -> book.getBookId() == bookId)
                     .findFirst()

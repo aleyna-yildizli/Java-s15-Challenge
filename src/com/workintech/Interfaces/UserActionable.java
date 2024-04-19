@@ -3,7 +3,7 @@ import java.util.List;
 import com.workintech.Book;
 
 
-//kullanıcıların kitap ödünç alması, iade etmesi ve ilgi işlemleri yönetmesi için interface.
+
 public interface UserActionable {
     void borrowBook(int bookId, String userName); //ödünç alma
 

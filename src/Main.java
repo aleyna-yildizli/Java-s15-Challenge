@@ -2,7 +2,6 @@ import com.workintech.Book;
 import com.workintech.Library;
 import com.workintech.enums.BookCategory;
 import com.workintech.enums.BookStatus;
-import com.workintech.enums.PersonRoles;
 import com.workintech.people.Author;
 import com.workintech.people.Librarian;
 import com.workintech.people.Reader;
@@ -12,57 +11,43 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Library library = new Library();
-        Librarian librarian = new Librarian("John", "password123", new Library());
+        Librarian librarian = new Librarian("John", "password123", library);
         Map<String, List<Book>> userBooks = new HashMap<>();
-        Reader reader = new Reader("Jane", "password456", userBooks, new Library());
+        Reader reader = new Reader("Jane", "password456", userBooks, library);
 
         Scanner scanner = new Scanner(System.in);
+        boolean exitProgram = false;
 
-        while (true) {
-            System.out.println("\nLütfen giriş yapmak için bir seçenek seçin:");
+        while (!exitProgram) {
+            System.out.println("\nKütüphaneye giriş yapmak için bir seçenek seçin:");
             System.out.println("1 - Kütüphaneci");
             System.out.println("2 - Kullanıcı");
             System.out.println("3 - Yazar");
-            System.out.print("Seçiminizi girin (1, 2 veya 3): ");
+            System.out.println("4 - Kütüphaneyi Kapat");
+            System.out.print("Seçiminizi girin: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
 
-            PersonRoles role = null;
-
             switch (choice) {
                 case 1:
-                    role = PersonRoles.LIBRARIAN;
+                    handleLibrarianLogin(scanner, librarian);
                     break;
                 case 2:
-                    role = PersonRoles.READER;
+                    handleReaderLogin(scanner, reader);
                     break;
                 case 3:
-                    role = PersonRoles.AUTHOR;
+                    System.out.println("Yazar için giriş işlemleri henüz uygulanmadı.");
+                    break;
+                case 4:
+                    System.out.println("Programdan çıkış yapılıyor...");
+                    exitProgram = true;
                     break;
                 default:
                     System.out.println("Geçersiz seçim. Lütfen tekrar deneyin.");
-                    continue; // Döngünün başına dön
             }
 
-            if (role != null) {
-                switch (role) {
-                    case LIBRARIAN:
-                        handleLibrarianLogin(scanner, librarian);
-                        break;
-                    case READER:
-                        handleReaderLogin(scanner, reader);
-                        break;
-                    case AUTHOR:
-                        System.out.println("Yazar için giriş işlemleri henüz uygulanmadı.");
-                        break;
-                }
-            }
         }
     }
-
-
-    private static boolean librarianExit = false;
-    private static boolean readerExit = false;
 
 
     // ********** Kütüphaneci giriş işlemlerini gerçekleştirir ve görevlerini yerine getirebilir. ***********
@@ -85,6 +70,7 @@ public class Main {
 
     private static void performLibrarianActions(Scanner scanner, Librarian librarian) {
         Library library = librarian.getLibrary();
+        boolean librarianExit;
         librarianExit = false;
         while (!librarianExit) {
             System.out.println("\nYapmak istediğiniz işlemi seçin:");
@@ -224,7 +210,7 @@ public class Main {
                     System.out.println("3 - Kitap yazarına göre arama");
                     System.out.print("Seçiminizi girin: ");
                     int searchChoice = scanner.nextInt();
-                    scanner.nextLine(); // scanner'ı temizlemek için
+                    scanner.nextLine();
 
                     switch (searchChoice) {
                         case 1:
@@ -247,7 +233,6 @@ public class Main {
                                 String searchBookName = scanner.nextLine();
                                 boolean foundByName = library.searchBooksByName(searchBookName);
                                 if (foundByName) {
-
                                     System.out.println("Aradığınız kitap adı mevcut.");
                                 } else {
                                     System.out.println("Aradığınız kitap adı bulunamadı.");
@@ -262,10 +247,8 @@ public class Main {
                                 Author searchAuthor = new Author(searchAuthorName, emptyBooksSet);
                                 boolean foundByAuthor = library.searchBooksByAuthor(searchAuthor);
                                 if (foundByAuthor) {
-                                    // Yazarın kitapları bulundu
                                     System.out.println("Aradığınız yazar mevcut ve kitapları bulundu.");
                                 } else {
-                                    // Yazarın kitapları bulunamadı
                                     System.out.println("Aradığınız yazar bulunamadı.");
                                 }
                                 break;
@@ -298,6 +281,7 @@ public class Main {
     }
 
     private static void performReaderActions(Scanner scanner, Reader reader) {
+        boolean readerExit;
         readerExit = false;
         while (!readerExit) {
             System.out.println("\nYapmak istediğiniz işlemi seçin:");
@@ -328,7 +312,7 @@ public class Main {
                     // Kitap iade etme işlemi
                     System.out.print("\nİade etmek istediğiniz kitabın ID'sini girin: ");
                     int returnBookId = scanner.nextInt();
-                    scanner.nextLine(); // Satır sonu karakterini temizleyin
+                    scanner.nextLine();
                     reader.returnBook(returnBookId, reader.getUserName());
                     break;
 
